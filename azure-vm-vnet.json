@@ -112,6 +112,7 @@
                                 "primary": false
                             },
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nic3'))]"
+                        }
                     ]
                 },
                 "diagnosticsProfile": {
