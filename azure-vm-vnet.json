@@ -41,15 +41,18 @@
         }
     },
     "variables": {
-        "virtualMachineName": "VM-MultiNic",
+        "virtualMachineName": "Win2016VM-MultiNic",
         "nic1": "nic-1",
         "nic2": "nic-2",
+        "nic3": "nic-3",
         "virtualNetworkName": "virtualNetwork",
         "subnet1Name": "subnet-1",
         "subnet2Name": "subnet-2",
+        "subnet3Name": "subnet-3",
         "publicIPAddressName": "publicIp",
         "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet1Name'))]",
         "subnet2Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet2Name'))]",
+        "subnet3Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet3Name'))]", 
         "diagStorageAccountName": "[concat('diags',uniqueString(resourceGroup().id))]",
         "networkSecurityGroupName": "NSG"
     },
@@ -57,12 +60,13 @@
         {
             "name": "[variables('virtualMachineName')]",
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2018-10-01",
             "location": "[parameters('location')]",
             "comments": "This is the virtual machine that you're building.",
             "dependsOn": [
                 "[variables('nic1')]",
                 "[variables('nic2')]",
+                "[variables('nic3')]",
                 "[variables('diagStorageAccountName')]"
             ],
             "properties": {
@@ -102,7 +106,12 @@
                                 "primary": false
                             },
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nic2'))]"
-                        }
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nic3'))]"
                     ]
                 },
                 "diagnosticsProfile": {
@@ -116,7 +125,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('diagStorageAccountName')]",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2018-07-01",
             "location": "[parameters('location')]",
             "sku": {
                 "name": "[parameters('storageAccountType')]"
@@ -127,7 +136,7 @@
         {
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[variables('virtualNetworkName')]",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2018-07-01",
             "location": "[parameters('location')]",
             "comments": "This will build a Virtual Network.",
             "properties": {
@@ -149,13 +158,18 @@
                             "addressPrefix": "10.0.1.0/24"
                         }
                     }
+                    {
+                        "name": "[variables('subnet3Name')]",
+                        "properties": {
+                            "addressPrefis": "10.0.2.0/24"
+                    }
                 ]
             }
         },
         {
             "name": "[variables('nic1')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2018-10-01",
             "location": "[parameters('location')]",
             "comments": "This will be your Primary NIC",
             "dependsOn": [
@@ -186,7 +200,7 @@
         {
             "name": "[variables('nic2')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2018-10-01",
             "location": "[parameters('location')]",
             "comments": "This will be your Secondary NIC",
             "dependsOn": [
@@ -206,10 +220,33 @@
                 ]
             }
         },
+           {
+            "name": "[variables('nic3')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "comments": "This will be your Tertiary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnet3Ref')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            }
+        },
         {
             "name": "[variables('publicIpAddressName')]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2017-06-01",
+            "apiVersion": "2018-10-01",
             "location": "[parameters('location')]",
             "comments": "Public IP for your Primary NIC",
             "properties": {
@@ -219,7 +256,7 @@
         {
             "name": "[variables('networkSecurityGroupName')]",
             "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2016-09-01",
+            "apiVersion": "2018-10-01",
             "location": "[parameters('location')]",
             "comments": "Network Security Group (NSG) for your Primary NIC",
             "properties": {
