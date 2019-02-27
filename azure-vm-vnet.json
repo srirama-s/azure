@@ -163,6 +163,7 @@
                         "name": "[variables('subnet3Name')]",
                         "properties": {
                             "addressPrefis": "10.0.2.0/24"
+                        }
                     }
                 ]
             }
