@@ -2,13 +2,37 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "adminUserName": { "value": "sriram" },
-        "adminPassword": { "value": "AzureW1ndow$" },
-        "storageAccountType": { "value": "Standard_LRS" },
-        "location": { "value": "[resourceGroup().location]" }
+      "adminUsername": {
+      "type": "string",
+      "defaultValue": "sriram",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+     },
+      "adminPassword": {
+      "type": "string",
+      "defaultValue": "AzureW1ndow$",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+     },
+      "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for the Virtual Machine."
+      }
+     },
+      "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "metadata": {
+        "description": "storage type for the Virtual Machine."
+      }
+     }
     },
     "variables": {
-        "virtualMachineName": "Win2016VM-MultiNic",
+        "virtualMachineName": "Win2016VM",
         "nic1": "nic-1",
         "nic2": "nic-2",
         "nic3": "nic-3",
@@ -19,7 +43,7 @@
         "publicIPAddressName": "publicIp",
         "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet1Name'))]",
         "subnet2Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet2Name'))]",
-        "subnet3Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet3Name'))]", 
+        "subnet3Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet3Name'))]",
         "diagStorageAccountName": "[concat('diags',uniqueString(resourceGroup().id))]",
         "networkSecurityGroupName": "NSG"
     },
@@ -46,7 +70,7 @@
                     }
                 },
                 "hardwareProfile": {
-                    "vmSize": "Standard_DS1_v2"
+                    "vmSize": "Standard_B2s"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -125,11 +149,11 @@
                         "properties": {
                             "addressPrefix": "10.0.1.0/24"
                         }
-                    }
+                    },
                     {
                         "name": "[variables('subnet3Name')]",
                         "properties": {
-                            "addressPrefis": "10.0.2.0/24"
+                            "addressPrefix": "10.0.2.0/24"
                         }
                     }
                 ]
