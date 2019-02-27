@@ -1,7 +1,12 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
+    "parameters": {
+        "adminUserName": { "value": "sriram" },
+        "adminPassword": { "value": "AzureW1ndow$" },
+        "storageAccountType": { "value": "Standard_LRS" },
+        "location": { "value": "[resourceGroup().location]" }
+    },
     "variables": {
         "virtualMachineName": "Win2016VM-MultiNic",
         "nic1": "nic-1",
