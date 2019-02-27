@@ -2,13 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "virtualMachineSize": {
-            "type": "string",
-            "defaultValue": "Standard_DS1_v2",
-            "metadata": {
-                "description": "Virtual machine size (has to be at least the size of Standard_A3 to support 2 NICs)"
-            }
-        },
         "adminUsername": {
             "type": "string",
             "metadata": {
@@ -79,7 +72,7 @@
                     }
                 },
                 "hardwareProfile": {
-                    "vmSize": "[parameters('virtualMachineSize')]"
+                    "vmSize": "Standard_DS1_v2"
                 },
                 "storageProfile": {
                     "imageReference": {
