@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+      "virtualMachineSize": {
+      "type": "string",
+      "defaultValue": "Standard_B2s",
+      "metadata": {
+        "description": "Recommended VM disk size to allow 3 NICs."
+      }
+     },
       "adminUsername": {
       "type": "string",
       "defaultValue": "sriram",
@@ -70,7 +77,7 @@
                     }
                 },
                 "hardwareProfile": {
-                    "vmSize": "Standard_B2s"
+                    "vmSize": "[parameters('virtualMachineSize')]"
                 },
                 "storageProfile": {
                     "imageReference": {
