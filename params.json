@@ -12,7 +12,7 @@
       "value": "AzureW1ndow$"
     },
     "location": {
-      "value": "[resourceGroup().location]"
+      "value": "eastus"
     },
     "storageAccountType": {
       "value": "Standard_LRS"
