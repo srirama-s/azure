@@ -20,12 +20,6 @@
         "description": "Password for the Virtual Machine."
       }
      },
-      "location": {
-      "type": "string",
-      "metadata": {
-        "description": "Location for the Virtual Machine."
-      }
-     },
       "storageAccountType": {
       "type": "string",
       "metadata": {
@@ -35,26 +29,28 @@
     },
     "variables": {
         "virtualMachineName": "Win2016VM",
-        "nic1": "nic-1",
-        "nic2": "nic-2",
-        "nic3": "nic-3",
-        "virtualNetworkName": "virtualNetwork",
-        "subnet1Name": "subnet-1",
-        "subnet2Name": "subnet-2",
-        "subnet3Name": "subnet-3",
-        "publicIPAddressName": "publicIp",
+        "nic1": "[concat(variables('virtualMachineName'), 'nic-1')]",
+        "nic2": "[concat(variables('virtualMachineName'), 'nic-2')]",
+        "nic3": "[concat(variables('virtualMachineName'), 'nic-3')]",
+        "virtualNetworkName": "[concat(variables('virtualMachineName'), 'virtualNetwork')]",
+        "subnet1Name": "[concat(variables('virtualMachineName'), 'subnet-1')]",
+        "subnet2Name": "[concat(variables('virtualMachineName'), 'subnet-2')]",
+        "subnet3Name": "[concat(variables('virtualMachineName'), 'subnet-3')]",
+        "publicIPAddressName": "[concat(variables('virtualMachineName'), 'publicIp')]",
         "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet1Name'))]",
         "subnet2Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet2Name'))]",
         "subnet3Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet3Name'))]",
-        "diagStorageAccountName": "[concat('diags',uniqueString(resourceGroup().id))]",
-        "networkSecurityGroupName": "NSG"
+        "diagStorageAccountName": "[concat('diags', uniqueString(resourceGroup().id))]",
+        "networkSecurityGroup1Name": "[concat(variables('virtualMachineName'), 'NSG-1')]",
+        "networkSecurityGroup2Name": "[concat(variables('virtualMachineName'), 'NSG-2')]",
+        "networkSecurityGroup3Name": "[concat(variables('virtualMachineName'), 'NSG-3')]"
     },
     "resources": [
         {
             "name": "[variables('virtualMachineName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-10-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "comments": "This is the virtual machine that you're building.",
             "dependsOn": [
                 "[variables('nic1')]",
@@ -120,7 +116,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('diagStorageAccountName')]",
             "apiVersion": "2018-07-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('storageAccountType')]"
             },
@@ -131,7 +127,7 @@
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[variables('virtualNetworkName')]",
             "apiVersion": "2018-07-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "comments": "This will build a Virtual Network.",
             "properties": {
                 "addressSpace": {
@@ -165,17 +161,17 @@
             "name": "[variables('nic1')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2018-10-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "comments": "This will be your Primary NIC",
             "dependsOn": [
                 "[variables('publicIpAddressName')]",
-                "[variables('networkSecurityGroupName')]",
+                "[variables('networkSecurityGroup1Name')]",
                 "[variables('virtualNetworkName')]"
             ],
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "ipconfig1",
+                        "name": "[concat(variables('virtualMachineName'), 'ipconfig-1')]",
                         "properties": {
                             "subnet": {
                                 "id": "[variables('subnet1Ref')]"
@@ -188,7 +184,7 @@
                     }
                 ],
                 "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup1Name'))]"
                 }
             }
         },
@@ -196,15 +192,16 @@
             "name": "[variables('nic2')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2018-10-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "comments": "This will be your Secondary NIC",
             "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+                "[variables('networkSecurityGroup2Name')]"
             ],
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "ipconfig1",
+                        "name": "[concat(variables('virtualMachineName'), 'ipconfig-2')]",
                         "properties": {
                             "subnet": {
                                 "id": "[variables('subnet2Ref')]"
@@ -212,22 +209,26 @@
                             "privateIPAllocationMethod": "Dynamic"
                         }
                     }
-                ]
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup2Name'))]"
+                }
             }
         },
            {
             "name": "[variables('nic3')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2018-10-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "comments": "This will be your Tertiary NIC",
             "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+		"[variables('networkSecurityGroup3Name')]"
             ],
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "ipconfig1",
+                        "name": "[concat(variables('virtualMachineName'), 'ipconfig-3')]",
                         "properties": {
                             "subnet": {
                                 "id": "[variables('subnet3Ref')]"
@@ -235,24 +236,27 @@
                             "privateIPAllocationMethod": "Dynamic"
                         }
                     }
-                ]
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup3Name'))]"
+                }
             }
         },
         {
             "name": "[variables('publicIpAddressName')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-10-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "comments": "Public IP for your Primary NIC",
             "properties": {
                 "publicIPAllocationMethod": "Dynamic"
             }
         },
         {
-            "name": "[variables('networkSecurityGroupName')]",
+            "name": "[variables('networkSecurityGroup1Name')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2018-10-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "comments": "Network Security Group (NSG) for your Primary NIC",
             "properties": {
                 "securityRules": [
@@ -263,6 +267,54 @@
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "3389",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('networkSecurityGroup2Name')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "Network Security Group (NSG) for your Secondary NIC",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "priority": 1001,
+                            "sourceAddressPrefix": "*",
+                            "protocol": "Tcp",
+                            "destinationPortRange": "22",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('networkSecurityGroup3Name')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "Network Security Group (NSG) for your Tertiary NIC",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-rdp",
+                        "properties": {
+                            "priority": 1002,
+                            "sourceAddressPrefix": "*",
+                            "protocol": "Tcp",
+                            "destinationPortRange": "3390",
                             "access": "Allow",
                             "direction": "Inbound",
                             "sourcePortRange": "*",

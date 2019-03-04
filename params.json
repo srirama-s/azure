@@ -11,11 +11,8 @@
     "adminPassword": {
       "value": "AzureW1ndow$"
     },
-    "location": {
-      "value": "eastus"
-    },
     "storageAccountType": {
       "value": "Standard_LRS"
     }
   }
-}	
+}
