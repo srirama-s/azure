@@ -1,0 +1,331 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "virtualMachineSize": {
+      "type": "string",
+      "metadata": {
+        "description": "Recommended VM disk size to allow 3 NICs."
+      }
+     },
+      "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+     },
+      "storageAccountType": {
+      "type": "string",
+      "metadata": {
+        "description": "storage type for the Virtual Machine."
+      }
+     }
+    },
+    "variables": {
+        "virtualMachineName": "CentOSVM",
+        "nic1": "[concat(variables('virtualMachineName'), 'nic-1')]",
+        "nic2": "[concat(variables('virtualMachineName'), 'nic-2')]",
+        "nic3": "[concat(variables('virtualMachineName'), 'nic-3')]",
+        "virtualNetworkName": "[concat(variables('virtualMachineName'), 'virtualNetwork')]",
+        "subnet1Name": "[concat(variables('virtualMachineName'), 'subnet-1')]",
+        "subnet2Name": "[concat(variables('virtualMachineName'), 'subnet-2')]",
+        "subnet3Name": "[concat(variables('virtualMachineName'), 'subnet-3')]",
+        "publicIPAddressName": "[concat(variables('virtualMachineName'), 'publicIp')]",
+        "subnet1Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet1Name'))]",
+        "subnet2Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet2Name'))]",
+        "subnet3Ref": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnet3Name'))]",
+        "diagStorageAccountName": "[concat('diags', uniqueString(resourceGroup().id))]",
+        "networkSecurityGroup1Name": "[concat(variables('virtualMachineName'), 'NSG-1')]",
+        "networkSecurityGroup2Name": "[concat(variables('virtualMachineName'), 'NSG-2')]",
+        "networkSecurityGroup3Name": "[concat(variables('virtualMachineName'), 'NSG-3')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('virtualMachineName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "This is the virtual machine that you're building.",
+            "dependsOn": [
+                "[variables('nic1')]",
+                "[variables('nic2')]",
+                "[variables('nic3')]",
+                "[variables('diagStorageAccountName')]"
+            ],
+            "properties": {
+                "osProfile": {
+                    "computerName": "[variables('virtualMachineName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": "true",
+                        "ssh":
+                        {
+                            "publicKeys": [
+                                {
+                                    "path": "/home/sriram/.ssh/authorized_keys",
+                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDG8ZGMfPI8v0ktFyJn0QNaql6qa8OA0iimAY2dk8U52YExdzqHNxmEoyeIZ71SpDjbX6K8BXJXg1u62kgbEQ9EPWMcGwX6HfV3u181vDxAHdf0LZV5tr9hc7JEKD1cQ0JhseskmnFAXoub76ozzX0y5yDYOri6B0ZqvS5sFwtIhSXttKLrECrmO1NDRvkpfP5wK8JCZpLkFWMEV6ScRaFq/XRzEJZwaBdgROB4tT7HeZP4/pqt0NWIWU7SNPg0BotcmXTbHcpntkrqW3uKMCED9mhZ0dwOuZ1S8M/rsUYoaJCHmxtYWDBojGYFElCCVPxkzxGNpGjQLE/0eU/kgVBT"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "OpenLogic",
+                        "offer": "CentOS",
+                        "sku": "7.5",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "properties": {
+                                "primary": true
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nic1'))]"
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nic2'))]"
+                        },
+                        {
+                            "properties": {
+                                "primary": false
+                            },
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nic3'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('diagStorageAccountName')), '2017-06-01').primaryEndpoints['blob']]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('diagStorageAccountName')]",
+            "apiVersion": "2018-07-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('virtualNetworkName')]",
+            "apiVersion": "2018-07-01",
+            "location": "[resourceGroup().location]",
+            "comments": "This will build a Virtual Network.",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    },
+                    {
+                        "name": "[variables('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "10.0.1.0/24"
+                        }
+                    },
+                    {
+                        "name": "[variables('subnet3Name')]",
+                        "properties": {
+                            "addressPrefix": "10.0.2.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('nic1')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "This will be your Primary NIC",
+            "dependsOn": [
+                "[variables('publicIpAddressName')]",
+                "[variables('networkSecurityGroup1Name')]",
+                "[variables('virtualNetworkName')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[concat(variables('virtualMachineName'), 'ipconfig-1')]",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnet1Ref')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup1Name'))]"
+                }
+            }
+        },
+        {
+            "name": "[variables('nic2')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "This will be your Secondary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+                "[variables('networkSecurityGroup2Name')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[concat(variables('virtualMachineName'), 'ipconfig-2')]",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnet2Ref')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup2Name'))]"
+                }
+            }
+        },
+           {
+            "name": "[variables('nic3')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "This will be your Tertiary NIC",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+		"[variables('networkSecurityGroup3Name')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[concat(variables('virtualMachineName'), 'ipconfig-3')]",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnet3Ref')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup3Name'))]"
+                }
+            }
+        },
+        {
+            "name": "[variables('publicIpAddressName')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "Public IP for your Primary NIC",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "name": "[variables('networkSecurityGroup1Name')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "Network Security Group (NSG) for your Primary NIC",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "priority": 1000,
+                            "sourceAddressPrefix": "*",
+                            "protocol": "Tcp",
+                            "destinationPortRange": "22",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('networkSecurityGroup2Name')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "Network Security Group (NSG) for your Secondary NIC",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-rdp",
+                        "properties": {
+                            "priority": 1001,
+                            "sourceAddressPrefix": "*",
+                            "protocol": "Tcp",
+                            "destinationPortRange": "3389",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('networkSecurityGroup3Name')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-10-01",
+            "location": "[resourceGroup().location]",
+            "comments": "Network Security Group (NSG) for your Tertiary NIC",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-rdp",
+                        "properties": {
+                            "priority": 1002,
+                            "sourceAddressPrefix": "*",
+                            "protocol": "Tcp",
+                            "destinationPortRange": "3390",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
