@@ -1,0 +1,228 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "VNet name"
+      }
+    },
+    "vnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Address prefix"
+      }
+    },
+    "subnet1Prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Prefix"
+      }
+    },
+    "subnet1Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Name"
+      }
+    },
+    "subnet2Prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 2 Prefix"
+      }
+    },
+    "subnet2Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 2 Name"
+      }
+    },
+    "subnet3Prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 3 Prefix"
+      }
+    },
+    "subnet3Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 3 Name"
+      }
+    },
+    "NSG1Name": {
+        "type": "string",
+        "metadata": {
+            "description": "Network Security Group 1 Name"
+        }
+    },
+    "NSG2Name": {
+        "type": "string",
+        "metadata": {
+            "description": "Network Security Group 2 Name"
+        }
+    },
+    "NSG3Name": {
+        "type": "string",
+        "metadata": {
+            "description": "Network Security Group 3 Name"
+        }
+    }
+},
+  "variables": {},
+  "resources": [
+    {
+      "apiVersion": "2018-10-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('vnetName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetAddressPrefix')]"
+          ]
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2018-10-01",
+          "type": "subnets",
+          "location": "[resourceGroup().location]",
+          "name": "[parameters('subnet1Name')]",
+          "dependsOn": [
+            "[parameters('vnetName')]",
+            "[parameters('NSG1Name')]"
+          ],
+          "properties": {
+            "addressPrefix": "[parameters('subnet1Prefix')]",
+            "networkSecurityGroup":{
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('NSG1Name'))]"
+            }
+          }
+        },
+        {
+          "apiVersion": "2018-10-01",
+          "type": "subnets",
+          "location": "[resourceGroup().location]",
+          "name": "[parameters('subnet2Name')]",
+          "dependsOn": [
+            "[parameters('vnetName')]",
+            "[parameters('NSG2Name')]"
+          ],
+          "properties": {
+            "addressPrefix": "[parameters('subnet2Prefix')]",
+            "networkSecurityGroup":{
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('NSG2Name'))]"
+            }            
+          }
+        },
+        {
+          "apiVersion": "2018-10-01",
+          "type": "subnets",
+          "location": "[resourceGroup().location]",
+          "name": "[parameters('subnet3Name')]",
+          "dependsOn": [
+            "[parameters('vnetName')]",
+            "[parameters('NSG3Name')]"
+          ],
+          "properties": {
+            "addressPrefix": "[parameters('subnet3Prefix')]",
+            "networkSecurityGroup":{
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('NSG3Name'))]"
+            }            
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2018-10-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('NSG1Name')]",
+      "location": "[resourceGroup().location]",
+      "comments": "Network Security Group (NSG) for your Primary NIC",
+      "properties": {
+          "securityRules": [
+              {
+                  "name": "default-allow-rdp",
+                  "properties": {
+                      "priority": 1000,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "3389",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              }
+          ]
+      }
+    },
+    {
+      "apiVersion": "2018-10-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('NSG2Name')]",
+      "location": "[resourceGroup().location]",
+      "comments": "Network Security Group (NSG) for your secondary NIC",
+      "properties": {
+          "securityRules": [
+              {
+                  "name": "default-allow-ssh",
+                  "properties": {
+                      "priority": 1000,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "22",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              }
+          ]
+      }
+    },
+    {
+      "apiVersion": "2018-10-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('NSG3Name')]",
+      "location": "[resourceGroup().location]",
+      "comments": "Network Security Group (NSG) for your tertiary NIC",
+      "properties": {
+          "securityRules": [
+              {
+                  "name": "default-allow-rdp",
+                  "properties": {
+                      "priority": 1000,
+                      "sourceAddressPrefix": "*",
+                      "protocol": "Tcp",
+                      "destinationPortRange": "3390",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*"
+                  }
+              }
+          ]
+      }
+    }        
+  ],
+  "outputs": {
+    "existingVnet": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+    },
+    "existingSubnet1": {
+      "type": "string",
+      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('subnet1Prefix'))]"
+    },
+    "existingSubnet2": {
+      "type": "string",
+      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('subnet2Prefix'))]"
+    },
+    "existingSubnet3": {
+      "type": "string",
+      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('subnet3Prefix'))]"
+    }
+  }
+}
