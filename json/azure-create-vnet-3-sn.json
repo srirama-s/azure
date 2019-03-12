@@ -209,20 +209,20 @@
   ],
   "outputs": {
     "existingVnet": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      "type": "object",
+      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('vnetName'))]"
     },
     "existingSubnet1": {
-      "type": "string",
-      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('subnet1Prefix'))]"
+      "type": "object",
+      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name'))]"
     },
     "existingSubnet2": {
-      "type": "string",
-      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('subnet2Prefix'))]"
+      "type": "object",
+      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet2Name'))]"
     },
     "existingSubnet3": {
-      "type": "string",
-      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('subnet3Prefix'))]"
+      "type": "object",
+      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet3Name'))]"
     }
   }
 }
