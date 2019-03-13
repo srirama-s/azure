@@ -295,19 +295,19 @@
   "outputs": {
     "existingVnet": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/VirtualNetworks', parameters('vnetName'))]"
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
     },
     "existingSubnet1": {
       "type": "string",
-      "value": "[resourceId('/providers/Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet1Name'))]"
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet1Name'))]"
     },
     "existingSubnet2": {
       "type": "string",
-      "value": "[resourceId('/providers/Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet2Name'))]"
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet2Name'))]"
     },
     "existingSubnet3": {
       "type": "string",
-      "value": "[resourceId('/providers/Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet3Name'))]"
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet3Name'))]"
     },
     "existingnic1": {
       "type": "string",
