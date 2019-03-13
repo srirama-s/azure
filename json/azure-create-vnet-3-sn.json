@@ -209,20 +209,20 @@
   ],
   "outputs": {
     "existingVnet": {
-      "type": "object",
-      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('vnetName'))]"
+      "type": "string",
+      "value": "[parameters('vnetName')]"
     },
     "existingSubnet1": {
-      "type": "object",
-      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name'))]"
+      "type": "string",
+      "value": "[parameters('subnet1Name')]"
     },
     "existingSubnet2": {
-      "type": "object",
-      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet2Name'))]"
+      "type": "string",
+      "value": "[parameters('subnet2Name')]"
     },
     "existingSubnet3": {
-      "type": "object",
-      "value": "[resourceId('Microsft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet3Name'))]"
+      "type": "string",
+      "value": "[parameters('subnet3Name')]"
     }
   }
 }
