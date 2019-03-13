@@ -69,7 +69,9 @@
         }
     }
 },
-  "variables": {},
+  "variables": {
+    "publicIpAddressName": "PIP"
+  },
   "resources": [
     {
       "apiVersion": "2018-10-01",
@@ -134,6 +136,89 @@
         }
       ]
     },
+    {
+      "name": "nic1",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "comments": "This will be your Primary NIC",
+      "dependsOn": [
+          "[variables('publicIpAddressName')]",
+          "[parameters('vnetName')]"
+      ],
+      "properties": {
+          "ipConfigurations": [
+              {
+                  "name": "ipconfig-1",
+                  "properties": {
+                      "subnet": {
+                          "id": "[parameters('subnet1Prefix')]"
+                      },
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIpAddress": {
+                          "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('publicIpAddressName'))]"
+                      }
+                  }
+              }
+          ]
+        }
+    },
+    {
+      "name": "nic2",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "comments": "This will be your Secondary NIC",
+      "dependsOn": [
+          "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+      ],
+      "properties": {
+          "ipConfigurations": [
+              {
+                  "name": "ipconfig-2",
+                  "properties": {
+                      "subnet": {
+                          "id": "[parameters('subnet2Prefix')]"
+                      },
+                      "privateIPAllocationMethod": "Dynamic"
+                  }
+              }
+          ]
+      }
+    },
+    {
+      "name": "nic3",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "comments": "This will be your tertiary NIC",
+      "dependsOn": [
+          "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+      ],
+      "properties": {
+          "ipConfigurations": [
+              {
+                  "name": "ipconfig-3",
+                  "properties": {
+                      "subnet": {
+                          "id": "[parameters('subnet3Prefix')]"
+                      },
+                      "privateIPAllocationMethod": "Dynamic"
+                  }
+              }
+          ]
+      }
+    },
+    {
+      "name": "[variables('publicIpAddressName')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "comments": "Public IP for your Primary NIC",
+      "properties": {
+          "publicIPAllocationMethod": "Dynamic"
+      }
+    },        
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Network/networkSecurityGroups",
@@ -223,6 +308,10 @@
     "existingSubnet3": {
       "type": "string",
       "value": "[parameters('subnet3Name')]"
+    },
+    "existingnic1": {
+      "type": "string",
+      "value": "nic1"
     }
   }
 }
