@@ -299,15 +299,15 @@
     },
     "existingSubnet1": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet1Name'))]"
+      "value": "/subscriptions/1f193341-e1fd-4379-b639-c645bcc85cf0/resourcegroups/WinRG/providers/Microsoft.Network/virtualNetworks/default_vnet/subnets/subnet-1"
     },
     "existingSubnet2": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet2Name'))]"
+      "value": "/subscriptions/1f193341-e1fd-4379-b639-c645bcc85cf0/resourcegroups/WinRG/providers/Microsoft.Network/virtualNetworks/default_vnet/subnets/subnet-2"
     },
     "existingSubnet3": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet3Name'))]"
+      "value": "/subscriptions/1f193341-e1fd-4379-b639-c645bcc85cf0/resourcegroups/WinRG/providers/Microsoft.Network/virtualNetworks/default_vnet/subnets/subnet-3"
     },
     "existingnic1": {
       "type": "string",
