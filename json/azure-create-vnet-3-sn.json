@@ -295,19 +295,19 @@
   "outputs": {
     "existingVnet": {
       "type": "string",
-      "value": "[parameters('vnetName')]"
+      "value": "[concat('Microsoft.Network/VirtualNetworks', parameters('vnetName'))]"
     },
     "existingSubnet1": {
       "type": "string",
-      "value": "[parameters('subnet1Name')]"
+      "value": "[concat('Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets', parameters('subnet1Name'))]"
     },
     "existingSubnet2": {
       "type": "string",
-      "value": "[parameters('subnet2Name')]"
+      "value": "[concat('Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets', parameters('subnet2Name'))]"
     },
     "existingSubnet3": {
       "type": "string",
-      "value": "[parameters('subnet3Name')]"
+      "value": "[concat('Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets', parameters('subnet3Name'))]"
     },
     "existingnic1": {
       "type": "string",
