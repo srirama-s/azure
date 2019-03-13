@@ -299,15 +299,15 @@
     },
     "existingSubnet1": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet1Name'))]"
+      "value": "[concat(resourceId('Microsoft.Network/VirtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnet1Name'))]"
     },
     "existingSubnet2": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet2Name'))]"
+      "value": "[concat(resourceId('Microsoft.Network/VirtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnet2Name'))]"
     },
     "existingSubnet3": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Network/VirtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet3Name'))]"
+      "value": "[concat(resourceId('Microsoft.Network/VirtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnet3Name'))]"
     },
     "existingnic1": {
       "type": "string",
