@@ -92,7 +92,6 @@
           "location": "[resourceGroup().location]",
           "name": "[parameters('subnet1Name')]",
           "dependsOn": [
-            "[parameters('vnetName')]",
             "[parameters('NSG1Name')]"
           ],
           "properties": {
@@ -108,7 +107,6 @@
           "location": "[resourceGroup().location]",
           "name": "[parameters('subnet2Name')]",
           "dependsOn": [
-            "[parameters('vnetName')]",
             "[parameters('NSG2Name')]"
           ],
           "properties": {
@@ -124,7 +122,6 @@
           "location": "[resourceGroup().location]",
           "name": "[parameters('subnet3Name')]",
           "dependsOn": [
-            "[parameters('vnetName')]",
             "[parameters('NSG3Name')]"
           ],
           "properties": {
@@ -143,8 +140,7 @@
       "location": "[resourceGroup().location]",
       "comments": "This will be your Primary NIC",
       "dependsOn": [
-          "[variables('publicIpAddressName')]",
-          "[parameters('vnetName')]"
+          "[variables('publicIpAddressName')]"
       ],
       "properties": {
           "ipConfigurations": [
@@ -169,9 +165,6 @@
       "apiVersion": "2018-10-01",
       "location": "[resourceGroup().location]",
       "comments": "This will be your Secondary NIC",
-      "dependsOn": [
-          "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
-      ],
       "properties": {
           "ipConfigurations": [
               {
@@ -192,9 +185,6 @@
       "apiVersion": "2018-10-01",
       "location": "[resourceGroup().location]",
       "comments": "This will be your tertiary NIC",
-      "dependsOn": [
-          "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
-      ],
       "properties": {
           "ipConfigurations": [
               {
