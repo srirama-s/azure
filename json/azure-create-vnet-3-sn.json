@@ -92,6 +92,7 @@
           "location": "[resourceGroup().location]",
           "name": "[parameters('subnet1Name')]",
           "dependsOn": [
+            "[parameters('vnetName')]",
             "[parameters('NSG1Name')]"
           ],
           "properties": {
@@ -107,6 +108,7 @@
           "location": "[resourceGroup().location]",
           "name": "[parameters('subnet2Name')]",
           "dependsOn": [
+            "[parameters('vnetName')]",
             "[parameters('NSG2Name')]"
           ],
           "properties": {
@@ -122,6 +124,7 @@
           "location": "[resourceGroup().location]",
           "name": "[parameters('subnet3Name')]",
           "dependsOn": [
+            "[parameters('vnetName')]",
             "[parameters('NSG3Name')]"
           ],
           "properties": {
