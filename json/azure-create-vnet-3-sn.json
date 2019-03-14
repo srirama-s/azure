@@ -194,7 +194,7 @@
                   "name": "ipconfig-3",
                   "properties": {
                       "subnet": {
-                        "id": "[(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet3Name'))]"
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet3Name'))]"
                       },
                       "privateIPAllocationMethod": "Dynamic"
                   }
