@@ -78,23 +78,20 @@
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[parameters('vnetName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[parameters('NSG1Name')]",
+        "[parameters('NSG2Name')]",
+        "[parameters('NSG3Name')]"
+      ],
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
             "[parameters('vnetAddressPrefix')]"
           ]
-        }
-      },
-      "resources": [
+        },
+      "subnets": [
         {
-          "apiVersion": "2018-10-01",
-          "type": "subnets",
-          "location": "[resourceGroup().location]",
           "name": "[parameters('subnet1Name')]",
-          "dependsOn": [
-            "[parameters('vnetName')]",
-            "[parameters('NSG1Name')]"
-          ],
           "properties": {
             "addressPrefix": "[parameters('subnet1Prefix')]",
             "networkSecurityGroup":{
@@ -103,14 +100,7 @@
           }
         },
         {
-          "apiVersion": "2018-10-01",
-          "type": "subnets",
-          "location": "[resourceGroup().location]",
           "name": "[parameters('subnet2Name')]",
-          "dependsOn": [
-            "[parameters('vnetName')]",
-            "[parameters('NSG2Name')]"
-          ],
           "properties": {
             "addressPrefix": "[parameters('subnet2Prefix')]",
             "networkSecurityGroup":{
@@ -119,14 +109,7 @@
           }
         },
         {
-          "apiVersion": "2018-10-01",
-          "type": "subnets",
-          "location": "[resourceGroup().location]",
           "name": "[parameters('subnet3Name')]",
-          "dependsOn": [
-            "[parameters('vnetName')]",
-            "[parameters('NSG3Name')]"
-          ],
           "properties": {
             "addressPrefix": "[parameters('subnet3Prefix')]",
             "networkSecurityGroup":{
@@ -135,7 +118,8 @@
           }
         }
       ]
-    },
+    }
+  },
     {
       "name": "nic1",
       "type": "Microsoft.Network/networkInterfaces",
@@ -151,7 +135,7 @@
                   "name": "ipconfig-1",
                   "properties": {
                       "subnet": {
-                          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet1Name'))]"
+                          "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnet1Name'))]"
                       },
                       "privateIPAllocationMethod": "Dynamic",
                       "publicIpAddress": {
@@ -174,7 +158,7 @@
                   "name": "ipconfig-2",
                   "properties": {
                       "subnet": {
-                          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet2Name'))]"
+                          "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnet2Name'))]"
                       },
                       "privateIPAllocationMethod": "Dynamic"
                   }
@@ -194,7 +178,7 @@
                   "name": "ipconfig-3",
                   "properties": {
                       "subnet": {
-                        "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'), '/subnets/', parameters('subnet3Name'))]"
+                        "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnet3Name'))]"
                       },
                       "privateIPAllocationMethod": "Dynamic"
                   }
