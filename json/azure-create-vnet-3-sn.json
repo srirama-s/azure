@@ -128,7 +128,7 @@
       "comments": "This will be your Primary NIC",
       "dependsOn": [
           "[variables('publicIpAddressName')]",
-          "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnet1Name'))]"
+          "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
       ],
       "properties": {
           "ipConfigurations": [
@@ -154,7 +154,7 @@
       "location": "[resourceGroup().location]",
       "comments": "This will be your Secondary NIC",
       "dependsOn": [
-        "[parameters('subnet2Name')]"
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
       ],
       "properties": {
           "ipConfigurations": [
@@ -177,7 +177,7 @@
       "location": "[resourceGroup().location]",
       "comments": "This will be your tertiary NIC",
       "dependsOn": [
-        "[parameters('subnet3Name')]"
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
       ],
       "properties": {
           "ipConfigurations": [
