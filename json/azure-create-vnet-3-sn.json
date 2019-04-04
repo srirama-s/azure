@@ -128,7 +128,7 @@
       "comments": "This will be your Primary NIC",
       "dependsOn": [
           "[variables('publicIpAddressName')]",
-          "[parameters('subnet1Name')]"
+          "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnet1Name'))]"
       ],
       "properties": {
           "ipConfigurations": [
