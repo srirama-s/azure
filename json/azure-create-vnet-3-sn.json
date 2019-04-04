@@ -127,7 +127,8 @@
       "location": "[resourceGroup().location]",
       "comments": "This will be your Primary NIC",
       "dependsOn": [
-          "[variables('publicIpAddressName')]"
+          "[variables('publicIpAddressName')]",
+          "[parameters('subnet1Name')]"
       ],
       "properties": {
           "ipConfigurations": [
@@ -152,6 +153,9 @@
       "apiVersion": "2018-10-01",
       "location": "[resourceGroup().location]",
       "comments": "This will be your Secondary NIC",
+      "dependsOn": [
+        "[parameters('subnet2Name')]"
+      ],
       "properties": {
           "ipConfigurations": [
               {
@@ -172,6 +176,9 @@
       "apiVersion": "2018-10-01",
       "location": "[resourceGroup().location]",
       "comments": "This will be your tertiary NIC",
+      "dependsOn": [
+        "[parameters('subnet3Name')]"
+      ],
       "properties": {
           "ipConfigurations": [
               {
